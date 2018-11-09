@@ -42,7 +42,8 @@ App = {
       // truffle library에서 data를 넘겨받아 트러플컨트랙에 넘겨서 인스턴스화 시킨다. 
       App.contracts.RealEstate = TruffleContract(data); //contract instance 화
       App.contracts.RealEstate.setProvider(App.web3Provider);
-      return App.loadRealEstates();
+      //return App.loadRealEstates();
+      App.listenToEvents();
     })
   },
 
@@ -76,7 +77,7 @@ App = {
         $('#name').val('');
         $('#age').val('');
         $('#buyModal').modal('hide');
-        return App.loadRealEstates(); 
+        //return App.loadRealEstates(); 
       }).catch(function(err) {
         console.log(err.message);
       });
@@ -112,9 +113,33 @@ App = {
        console.log(err.message);
      })
   },
-	
+  
+  // 매입 후 구매자가에게 알람 메세지 전송.
+  // listenToEvents: function() {
+  //   App.contracts.RealEstate.deployed().then(function(instance) {
+  //     // filtering event : {}
+  //     // 
+  //     instance.LogBuyRealEstates({}, { fromBlock: 0, toBlock: 'latest' }).watch(function(err, event){
+  //       if(!error){
+  //         $('#event').append('<p>' + event.args._buyer + ' 계정에서 ' + event.args_id  + ' 번 매물을 매입했습니다! ' +'</p>')
+  //       } else {
+  //         console.error(error);
+  //       }
+  //       App.loadRealEstates();
+  //     })
+  //   })
+  // }
   listenToEvents: function() {
-	
+	  App.contracts.RealEstate.deployed().then(function(instance) {
+      instance.LogBuyRealEstate({}, { fromBlock: 0, toBlock: 'latest' }).watch(function(error, event) {
+        if (!error) {
+          $('#events').append('<p>' + event.args._buyer + ' 계정에서 ' + event.args._id + ' 번 매물을 매입했습니다.' + '</p>');
+        } else {
+          console.error(error);
+        }
+        App.loadRealEstates();
+      })
+    })
   }
 };
 
