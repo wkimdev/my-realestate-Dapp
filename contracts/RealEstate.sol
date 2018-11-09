@@ -7,7 +7,7 @@ contract RealEstate {
         uint age;
     }
 
-    // 매입자 정보 보관
+    // 매입자 정보 보관 (읽기 전용함수에서 쓴다. )
     mapping (uint => Buyer) public buyerInfo; //id와 (키) 매물자 정보(값)
     address public owner;
     address[10] public buyers;
@@ -26,6 +26,7 @@ contract RealEstate {
         owner = msg.sender; // 현재 생성한 계정값.(주소형), 이 컨트랙의 주인은 현재 배포 계정이다. 라는 뜻.
     }
 
+    // blockchain에 저장되는 중요 함수.
     function buyRealEstate(uint _id, bytes32 _name, uint _age) public payable {
         // 1. 유효성 체크
         require(_id >= 0 && _id <= 9); // 매물의 id
